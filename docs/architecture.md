@@ -119,7 +119,21 @@ are labelled `licensed` (domain-scale and coarser) or `exploratory`
 (residue-scale), and there are **no cross-serotype tests** (those are S5). See
 [`s3.md`](s3.md).
 
-Further stages (S4+) import the canonical tables and/or the S1A/S1B/S2/S3 tables
-(or their builders) and add their own module. They must not modify S0, S1A, S1B,
-S2, or S3, must keep the data levels separate, and must not commit generated
-outputs. See `CONTRIBUTING.md`.
+**S4** (`src/stride_s4/`) is implemented and follows the same architecture. It
+consumes **only** the S0 STRIDE table (the profile) and reduces its *uncertainty*
+into the uncertainty layer: the per-domain variance-component budget (τ² vs σ̄²)
+with the replicate-vs-sampling regime diagnostic, the per-residue
+replicate-disagreement map (positions ranked by τ²), the CI-based significance
+screen over the gated mechanisms with Benjamini–Hochberg FDR control within each
+serotype, and the β_se-weighted effect summary per domain. It is a **sibling
+reduction to S2 and S3** — all three read the S0 profile independently; S4 does
+not consume S2's or S3's outputs. Its products are ρ\\*-independent descriptions of
+the profile and the emitted mechanisms, rows are labelled `licensed`
+(domain-scale and coarser) or `exploratory` (residue-scale), the FDR family is
+the positions of a single serotype, and there are **no cross-serotype tests**
+(those are S5). See [`s4.md`](s4.md).
+
+Further stages (S5+) import the canonical tables and/or the S1A/S1B/S2/S3/S4
+tables (or their builders) and add their own module. They must not modify S0,
+S1A, S1B, S2, S3, or S4, must keep the data levels separate, and must not commit
+generated outputs. See `CONTRIBUTING.md`.

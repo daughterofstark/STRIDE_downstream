@@ -3,6 +3,7 @@ outputs/*
 !outputs/.gitkeep
 outputs_s1a/
 outputs_s1b/
+outputs_s2/
 *.parquet
 *.log
 

@@ -99,7 +99,16 @@ per-domain, per-hierarchy, and per-serotype deterministic structural annotations
 Every derived column is a categorical or boolean label from a closed vocabulary —
 no statistics, ranking, clustering, or figures. See [`s1b.md`](s1b.md).
 
-Further stages (S2+) import the canonical tables and/or the S1A/S1B tables (or
-their builders) and add their own module. They must not modify S0, S1A, or S1B,
-must keep the data levels separate, and must not commit generated outputs. See
+**S2** (`src/stride_s2/`) is implemented and follows the same architecture. It
+consumes **only** the S0 STRIDE table and the two S1B annotation tables, and
+builds the per-serotype *reduction* layer: the achieved-resolution census, the
+residue-scale reproducibility landscape, domain-scale reproducibility, the
+signed/significant screen, and a per-serotype scorecard. Every resolution
+quantity is reported over a **ρ\* band** (the gate is uncalibrated), rows are
+labelled `licensed` (domain-scale) or `exploratory` (residue-scale), and there
+are **no cross-serotype tests** (those are S5). See [`s2.md`](s2.md).
+
+Further stages (S3+) import the canonical tables and/or the S1A/S1B/S2 tables (or
+their builders) and add their own module. They must not modify S0, S1A, S1B, or
+S2, must keep the data levels separate, and must not commit generated outputs. See
 `CONTRIBUTING.md`.

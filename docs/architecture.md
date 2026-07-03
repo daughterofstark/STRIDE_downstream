@@ -92,7 +92,14 @@ parquet tables (never the raw STRIDE files) and builds the biological data layer
 (canonical residues, domain summaries, replicate availability, conservation
 mapping). See [`s1a.md`](s1a.md).
 
-Further stages (S1B+) import the S0 canonical tables and/or the S1A tables (or
-their builders) and add their own module. They must not modify S0 or S1A, must
-keep the data levels separate, and must not commit generated outputs. See
+**S1B** (`src/stride_s1b/`) is implemented and follows the same architecture. It
+consumes **only** the four S1A parquet tables (never S0 outputs, raw STRIDE
+files, or trajectories) and builds the biological *annotation* layer: per-residue,
+per-domain, per-hierarchy, and per-serotype deterministic structural annotations.
+Every derived column is a categorical or boolean label from a closed vocabulary —
+no statistics, ranking, clustering, or figures. See [`s1b.md`](s1b.md).
+
+Further stages (S2+) import the canonical tables and/or the S1A/S1B tables (or
+their builders) and add their own module. They must not modify S0, S1A, or S1B,
+must keep the data levels separate, and must not commit generated outputs. See
 `CONTRIBUTING.md`.

@@ -1,0 +1,65 @@
+{
+  "schema_version": "m5",
+  "calibrated": false,
+  "uncalibrated_note": "provisional threshold; do not make gate claims.",
+  "gate": {
+    "rho_star": 0.5,
+    "alpha": 0.05,
+    "coherence_threshold": 0.6
+  },
+  "summary": {
+    "n_loci": 2,
+    "n_mechanisms": 2,
+    "n_unresolved": 0,
+    "n_gate_uncertain": 2
+  },
+  "mechanisms": [
+    {
+      "region_id": "CPLX/prot/NS3/Catalytic Triad/none/unknown/NS3:51",
+      "label": "NS3:51",
+      "scale_level": "residue",
+      "scale_index": 0,
+      "n_loci": 1,
+      "loci": [
+        "CPLX/prot/NS3/Catalytic Triad/none/unknown/NS3:51"
+      ],
+      "rho": 0.8,
+      "rho_star": 0.5,
+      "calibrated": false,
+      "direction": "increase",
+      "beta_signed": 0.12,
+      "beta_ci_lower": 0.02,
+      "beta_ci_upper": 0.22,
+      "beta_se": 0.05,
+      "coherence": 0.9,
+      "reproducible_magnitude_energy": 1.0,
+      "method": "bayesian",
+      "gate_uncertain": true,
+      "status": "gate_uncertain"
+    },
+    {
+      "region_id": "CPLX/prot/NS3/C-Terminal Tail",
+      "label": "C-Terminal Tail",
+      "scale_level": "domain",
+      "scale_index": 3,
+      "n_loci": 1,
+      "loci": [
+        "CPLX/prot/NS3/C-Terminal Tail/none/unknown/NS3:200"
+      ],
+      "rho": 0.7,
+      "rho_star": 0.5,
+      "calibrated": false,
+      "direction": "mixed",
+      "beta_signed": null,
+      "beta_ci_lower": null,
+      "beta_ci_upper": null,
+      "beta_se": null,
+      "coherence": 0.5,
+      "reproducible_magnitude_energy": 1.3,
+      "method": "bayesian",
+      "gate_uncertain": true,
+      "status": "gate_uncertain"
+    }
+  ],
+  "unresolved_loci": []
+}

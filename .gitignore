@@ -1,0 +1,35 @@
+# ---- generated outputs (never committed; regenerate with `stride-s0`) -------
+outputs/*
+!outputs/.gitkeep
+*.parquet
+*.log
+
+# ---- user-supplied datasets (Level 0/1/2 real data are NOT source) ----------
+# The example under examples/ IS committed; real datasets under data/ are not.
+data/*
+!data/README.md
+
+# ---- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---- virtualenvs / envs ----------------------------------------------------
+.venv/
+venv/
+env/
+
+# ---- editors / OS ----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store

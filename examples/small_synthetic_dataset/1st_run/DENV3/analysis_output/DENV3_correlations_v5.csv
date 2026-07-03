@@ -1,0 +1,3 @@
+file_resid,canon_resid,name,label,r,abs_r,domain_label,rmsf,theta_se
+51,51,HIS,NS3:51,0.41000000000000003,0.41000000000000003,NS3pro,0.8500000000000001,0.05
+200,200,LYS,NS3:200,-0.19,0.19,NS3pro,0.8500000000000001,0.05

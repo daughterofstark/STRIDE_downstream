@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stride-dengue-analysis"
+version = "0.2.0"
+description = "Downstream analysis framework for STRIDE outputs (DENV1-4). Stage S0: ingestion + canonical data layer."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "STRIDE downstream analysis contributors" }]
+keywords = ["molecular-dynamics", "reproducibility", "dengue", "STRIDE", "data-pipeline"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "pandas>=2.0",
+    "pyarrow>=12.0",
+    "pydantic>=2.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "mypy>=1.8",
+    "ruff>=0.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/OWNER/stride-dengue-analysis"
+Repository = "https://github.com/OWNER/stride-dengue-analysis"
+Issues = "https://github.com/OWNER/stride-dengue-analysis/issues"
+
+[project.scripts]
+stride-s0 = "stride_analysis.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["stride_analysis"]
+omit = ["src/stride_analysis/_synthetic.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/stride_analysis"]
+ignore_missing_imports = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+# numpy (and some other deps) ship inline stubs that use syntax newer than the
+# configured python_version; don't type-check into third-party packages.
+[[tool.mypy.overrides]]
+module = ["numpy.*", "pandas.*", "pyarrow.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "W",    # pycodestyle warnings
+]
+ignore = [
+    "E501",  # line length is handled by the formatter, not enforced hard
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]  # allow assert False style in tests

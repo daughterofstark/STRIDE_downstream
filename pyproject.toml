@@ -38,6 +38,7 @@ Issues = "https://github.com/OWNER/stride-dengue-analysis/issues"
 
 [project.scripts]
 stride-s0 = "stride_analysis.__main__:main"
+stride-s1a = "stride_s1a.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -49,7 +50,7 @@ pythonpath = ["src"]
 
 [tool.coverage.run]
 branch = true
-source = ["stride_analysis"]
+source = ["stride_analysis", "stride_s1a"]
 omit = ["src/stride_analysis/_synthetic.py"]
 
 [tool.coverage.report]
@@ -61,7 +62,7 @@ exclude_lines = [
 
 [tool.mypy]
 python_version = "3.10"
-files = ["src/stride_analysis"]
+files = ["src/stride_analysis", "src/stride_s1a", "tests"]
 ignore_missing_imports = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

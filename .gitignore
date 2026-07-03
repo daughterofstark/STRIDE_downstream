@@ -1,6 +1,7 @@
 # ---- generated outputs (never committed; regenerate with `stride-s0`) -------
 outputs/*
 !outputs/.gitkeep
+outputs_s1a/
 *.parquet
 *.log
 

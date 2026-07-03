@@ -36,7 +36,10 @@ jobs:
         run: mypy
 
       - name: Test
-        run: pytest --cov=stride_analysis --cov-report=term-missing
+        run: pytest --cov=stride_analysis --cov=stride_s1a --cov-report=term-missing
 
       - name: Smoke-run S0 on the committed example
         run: stride-s0 --data-root examples/small_synthetic_dataset --output-dir /tmp/s0_ci
+
+      - name: Smoke-run S1A on the S0 output
+        run: stride-s1a --input-dir /tmp/s0_ci --output-dir /tmp/s1a_ci

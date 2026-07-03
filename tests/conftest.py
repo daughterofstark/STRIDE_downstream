@@ -29,7 +29,9 @@ def run_dirs() -> list[str]:
 
 
 @pytest.fixture
-def dataset_root(tmp_path: Path, serotypes, run_dirs) -> Path:
+def dataset_root(
+    tmp_path: Path, serotypes: list[str], run_dirs: list[str]
+) -> Path:
     """A complete, valid dataset (both levels) on disk."""
     return write_dataset(tmp_path / "data", serotypes, run_dirs)
 

@@ -83,8 +83,16 @@ Every failure is a typed exception:
 All subclass `StrideAnalysisError`, so callers can catch everything with one
 `except`.
 
-## Extending to S1 (not implemented here)
+## Downstream stages
 
-A later stage imports the canonical tables (or the builders) and adds its own
-module. It must not modify S0, must keep the two data levels separate, and must
-not commit generated outputs. See `CONTRIBUTING.md`.
+**S1A** (`src/stride_s1a/`) is implemented and follows the same architecture as
+S0 — reusable `models/`, `io/`, `build/`, and `validation/` subpackages with a
+thin `s1a.py` orchestrator and a CLI. It consumes **only** the S0 canonical
+parquet tables (never the raw STRIDE files) and builds the biological data layer
+(canonical residues, domain summaries, replicate availability, conservation
+mapping). See [`s1a.md`](s1a.md).
+
+Further stages (S1B+) import the S0 canonical tables and/or the S1A tables (or
+their builders) and add their own module. They must not modify S0 or S1A, must
+keep the data levels separate, and must not commit generated outputs. See
+`CONTRIBUTING.md`.

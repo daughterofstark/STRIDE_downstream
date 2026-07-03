@@ -38,7 +38,7 @@ from stride_s1b.models.schema import (
     ],
 )
 def test_is_resolved(value: object, expected: bool) -> None:
-    assert is_resolved(value) is expected  # type: ignore[arg-type]
+    assert is_resolved(value) is expected
 
 
 def test_domain_status() -> None:

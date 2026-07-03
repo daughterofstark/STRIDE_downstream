@@ -108,7 +108,18 @@ quantity is reported over a **ρ\* band** (the gate is uncalibrated), rows are
 labelled `licensed` (domain-scale) or `exploratory` (residue-scale), and there
 are **no cross-serotype tests** (those are S5). See [`s2.md`](s2.md).
 
-Further stages (S3+) import the canonical tables and/or the S1A/S1B/S2 tables (or
-their builders) and add their own module. They must not modify S0, S1A, S1B, or
-S2, must keep the data levels separate, and must not commit generated outputs. See
-`CONTRIBUTING.md`.
+**S3** (`src/stride_s3/`) is implemented and follows the same architecture. It
+consumes **only** the S0 STRIDE table (the profile) and reduces it *along the
+scale axis* into the hierarchy layer: the ρ-vs-scale curve per locus, the
+domain−residue reproducibility gap Δρ, the monotonicity (I2 upward-closure)
+audit, and the chain-level contrast (e.g. NS2B vs NS3). It is a **sibling
+reduction to S2** — both read the S0 profile independently; S3 does not consume
+S2's outputs. Its products are ρ\*-independent descriptions of the profile, rows
+are labelled `licensed` (domain-scale and coarser) or `exploratory`
+(residue-scale), and there are **no cross-serotype tests** (those are S5). See
+[`s3.md`](s3.md).
+
+Further stages (S4+) import the canonical tables and/or the S1A/S1B/S2/S3 tables
+(or their builders) and add their own module. They must not modify S0, S1A, S1B,
+S2, or S3, must keep the data levels separate, and must not commit generated
+outputs. See `CONTRIBUTING.md`.

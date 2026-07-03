@@ -13,7 +13,7 @@ produced.
 > **Before publishing:** replace `OWNER` in the badge and clone URLs (and in
 > `pyproject.toml`) with your GitHub org/user, and confirm the `LICENSE` holder.
 
-> **Status: Stages S0, S1A, S1B and S2 implemented.**
+> **Status: Stages S0, S1A, S1B, S2 and S3 implemented.**
 > **S0** = ingestion, validation, and canonical data-layer construction (the two
 > canonical tables every later stage consumes). **S1A** = the reusable *biological
 > data layer* built on S0: canonical residue objects, domain summaries, replicate
@@ -24,11 +24,16 @@ produced.
 > census, residue-scale landscape, domain-scale reproducibility, the
 > signed/significant screen, and a per-serotype scorecard — all reported over a
 > **ρ\* band** (the gate is uncalibrated) with `licensed`/`exploratory` tier
-> labels and **no cross-serotype tests**. None of these stages contain
-> **statistics, ranking, mechanism inference, or figures** beyond S2's structural
-> reduction — cross-serotype inference belongs to later stages (S3+), which are
-> intentionally not implemented here. See [`docs/s1a.md`](docs/s1a.md),
-> [`docs/s1b.md`](docs/s1b.md), and [`docs/s2.md`](docs/s2.md) for the tables and
+> labels and **no cross-serotype tests**. **S3** = the *hierarchy reduction layer*
+> built on the S0 STRIDE table: the ρ-vs-scale curve per locus, the
+> domain−residue reproducibility gap, the monotonicity (upward-closure) audit,
+> and the chain-level contrast (NS2B vs NS3) — a sibling reduction to S2,
+> ρ\*-independent, with the same tier labels and **no cross-serotype tests**.
+> None of these stages contain **statistics, ranking, mechanism inference, or
+> figures** beyond S2/S3's structural reduction — cross-serotype inference belongs
+> to later stages (S4+), which are intentionally not implemented here. See
+> [`docs/s1a.md`](docs/s1a.md), [`docs/s1b.md`](docs/s1b.md),
+> [`docs/s2.md`](docs/s2.md), and [`docs/s3.md`](docs/s3.md) for the tables and
 > their consumers.
 
 This is a **framework**, not a dataset: real STRIDE outputs are user-supplied
@@ -60,6 +65,9 @@ stride-s1b --input-dir outputs_s1a --output-dir outputs_s1b
 
 # then build the S2 per-serotype reduction layer on top of the S0 + S1B tables
 stride-s2 --stride-input-dir outputs --annotation-input-dir outputs_s1b --output-dir outputs_s2
+
+# then build the S3 hierarchy reduction layer on top of the S0 STRIDE table
+stride-s3 --input-dir outputs --output-dir outputs_s3
 ```
 
 Programmatic use:
@@ -154,16 +162,18 @@ stride-dengue-analysis/
 │   ├── stride_analysis/     # S0: the canonical data layer (installable package)
 │   ├── stride_s1a/          # S1A: the reusable biological data layer
 │   ├── stride_s1b/          # S1B: the biological annotation layer
-│   └── stride_s2/           # S2: the per-serotype reduction layer
+│   ├── stride_s2/           # S2: the per-serotype reduction layer
+│   └── stride_s3/           # S3: the hierarchy reduction layer
 ├── tests/                   # unit + integration tests (synthetic fixtures only)
 │   ├── unit/
 │   ├── integration/
 │   ├── s1a/                 # S1A tests
 │   ├── s1b/                 # S1B tests
-│   └── s2/                  # S2 tests
+│   ├── s2/                  # S2 tests
+│   └── s3/                  # S3 tests
 ├── examples/
 │   └── small_synthetic_dataset/   # a tiny, valid dataset (committed)
-├── docs/                    # architecture, data model, usage, s1a, s1b, s2
+├── docs/                    # architecture, data model, usage, s1a, s1b, s2, s3
 ├── data/                    # your datasets (git-ignored; see data/README.md)
 ├── outputs/                 # generated artifacts (git-ignored)
 ├── notebooks/               # optional exploratory work (not implementation)
@@ -183,6 +193,7 @@ stride-dengue-analysis/
 - [`docs/s1a.md`](docs/s1a.md) — the S1A biological data layer and its consumers
 - [`docs/s1b.md`](docs/s1b.md) — the S1B biological annotation layer and its consumers
 - [`docs/s2.md`](docs/s2.md) — the S2 per-serotype reduction layer and its consumers
+- [`docs/s3.md`](docs/s3.md) — the S3 hierarchy reduction layer and its consumers
 - [`data/README.md`](data/README.md) — expected input layout and data levels
 
 ---

@@ -44,6 +44,7 @@ stride-s0 = "stride_analysis.__main__:main"
 stride-s1a = "stride_s1a.__main__:main"
 stride-s1b = "stride_s1b.__main__:main"
 stride-s2 = "stride_s2.__main__:main"
+stride-s3 = "stride_s3.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -55,7 +56,7 @@ pythonpath = ["src"]
 
 [tool.coverage.run]
 branch = true
-source = ["stride_analysis", "stride_s1a", "stride_s1b", "stride_s2"]
+source = ["stride_analysis", "stride_s1a", "stride_s1b", "stride_s2", "stride_s3"]
 omit = ["src/stride_analysis/_synthetic.py"]
 
 [tool.coverage.report]
@@ -67,7 +68,7 @@ exclude_lines = [
 
 [tool.mypy]
 python_version = "3.10"
-files = ["src/stride_analysis", "src/stride_s1a", "src/stride_s1b", "src/stride_s2", "tests"]
+files = ["src/stride_analysis", "src/stride_s1a", "src/stride_s1b", "src/stride_s2", "src/stride_s3", "tests"]
 ignore_missing_imports = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
@@ -105,7 +106,7 @@ ignore = [
 # deterministic regardless of Ruff's src auto-detection, the Ruff version, or
 # whether the package is installed. Without this, CI (which may resolve these as
 # third-party) and a local editable install can disagree and emit I001.
-known-first-party = ["stride_analysis", "stride_s1a", "stride_s1b", "stride_s2", "tests"]
+known-first-party = ["stride_analysis", "stride_s1a", "stride_s1b", "stride_s2", "stride_s3", "tests"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011"]  # allow assert False style in tests

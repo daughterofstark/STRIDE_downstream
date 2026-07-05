@@ -170,7 +170,27 @@ a STRIDE re-run). Per-run θ is read, never recomputed, and is never reconstruct
 from the K-aggregate; residue-scale per-run products are `exploratory` at K = 3;
 the gate stays uncalibrated. See [`s6.md`](s6.md).
 
-Further stages (S7+) import the canonical tables and/or the
-S1A/S1B/S2/S3/S4/S5/S6 tables (or their builders) and add their own module. They
-must not modify S0, S1A, S1B, S2, S3, S4, S5, or S6, must keep the data levels
+**S7** (`src/stride_s7/`) is implemented and follows the same architecture. It is
+the terminal **reporting layer**: it consumes the reduced outputs of S2–S6 and
+assembles the design's publication figures (**F1–F8**) and manuscript tables
+(**T1–T5**), deterministically and provenance-stamped. It performs **no new
+statistics and no inference** — every value is read from a prior stage's table and
+merely selected, joined, ordered, and formatted; it never reads the raw STRIDE
+files or the S0/S1 canonical layer, and it recomputes nothing. The IO / build /
+validation / plotting split is preserved: `build/` prepares plotting-ready frames
+and assembles the tables, and `plotting/` only renders already-prepared frames to
+SVG — no plotting library is added, so output is byte-reproducible (sorted rows,
+fixed rounding, no embedded timestamp; PNG/PDF rasterisation is intentionally
+omitted to avoid a version-sensitive dependency). All eight figures and five tables
+are fully supported by the existing outputs; the replicate layer (S6) feeds no
+design figure/table, so its blocked-analysis ledger is surfaced under the report's
+`limitations` and its inputs are digested for provenance rather than fabricated
+into a figure. Validation is structural only (completeness, columns, deterministic
+filenames, on-disk presence, provenance completeness); figures and tables carry
+through the `licensed` / `exploratory` tiers and make no calibrated claim. See
+[`s7.md`](s7.md).
+
+Further stages (S8+) import the canonical tables and/or the
+S1A/S1B/S2/S3/S4/S5/S6/S7 tables (or their builders) and add their own module. They
+must not modify S0, S1A, S1B, S2, S3, S4, S5, S6, or S7, must keep the data levels
 separate, and must not commit generated outputs. See `CONTRIBUTING.md`.

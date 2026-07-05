@@ -133,7 +133,24 @@ the profile and the emitted mechanisms, rows are labelled `licensed`
 the positions of a single serotype, and there are **no cross-serotype tests**
 (those are S5). See [`s4.md`](s4.md).
 
-Further stages (S5+) import the canonical tables and/or the S1A/S1B/S2/S3/S4
-tables (or their builders) and add their own module. They must not modify S0,
-S1A, S1B, S2, S3, or S4, must keep the data levels separate, and must not commit
-generated outputs. See `CONTRIBUTING.md`.
+**S5** (`src/stride_s5/`) is implemented and follows the same architecture. It
+consumes **only** the S0 STRIDE table (the profile) and the S1A
+`conservation_table` (the shared-position index), and builds the cross-serotype
+layer at **n = 4** (serotype is the unit of biological replication): the
+conservation of reproducibility across shared positions (all / majority / some /
+none, with serotype-divergent and Catalytic-Triad flags), the direction
+concordance for shared signed positions (agree / majority / conflict), the
+tidy-long ρ(domain × serotype) matrix over the NS3 domains + NS2B (catalytic
+domains flagged), and a per-serotype cross-serotype scorecard. It aggregates each
+serotype to one value per position/region **first**, then compares across the four
+serotypes — never treating residues as independent samples — and reports
+**descriptive** statistics, not p-values across residues. Its reproducibility
+statements are relative to the provisional ρ\* (the gate is uncalibrated), rows are
+labelled `licensed` (the domain × serotype matrix) or `exploratory` (the
+residue-scale position and scorecard products), and it produces no figures. See
+[`s5.md`](s5.md).
+
+Further stages (S6+) import the canonical tables and/or the
+S1A/S1B/S2/S3/S4/S5 tables (or their builders) and add their own module. They must
+not modify S0, S1A, S1B, S2, S3, S4, or S5, must keep the data levels separate, and
+must not commit generated outputs. See `CONTRIBUTING.md`.

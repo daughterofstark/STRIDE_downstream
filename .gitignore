@@ -6,6 +6,7 @@ outputs_s1b/
 outputs_s2/
 outputs_s3/
 outputs_s4/
+outputs_s5/
 *.parquet
 *.log
 

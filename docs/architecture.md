@@ -150,7 +150,27 @@ labelled `licensed` (the domain × serotype matrix) or `exploratory` (the
 residue-scale position and scorecard products), and it produces no figures. See
 [`s5.md`](s5.md).
 
-Further stages (S6+) import the canonical tables and/or the
-S1A/S1B/S2/S3/S4/S5 tables (or their builders) and add their own module. They must
-not modify S0, S1A, S1B, S2, S3, S4, or S5, must keep the data levels separate, and
-must not commit generated outputs. See `CONTRIBUTING.md`.
+**S6** (`src/stride_s6/`) is implemented and follows the same architecture. It is
+the **replicate layer** and the only stage that reads the replicate-specific
+inputs: the S1A `replicate_inventory` (the replicate-structure index — always
+present) and, when it exists, the S0 `replicate_table` (the Level-1 per-run θ
+observations). It builds a per-serotype replicate-regime ledger (replicate count
+K, completeness, residue-claim licensing at K ≥ 5, per-run-effect availability), a
+descriptive across-run per-run-θ spread, a per-serotype rank concordance across
+runs (Kendall's *W* and mean pairwise Spearman, design §3.1), and an explicit
+blocked-analysis ledger. It does **not** read the STRIDE table and does **not**
+re-implement the τ²-based replicate-disagreement mapping or τ²/σ̄² regime
+diagnostic — those read the K-aggregate and are already produced by **S4**
+(`residue_variance` / `variance_budget`). The per-run concordance and spread are
+computed **only when the per-run correlation CSVs were supplied** (ingested by S0
+into the replicate table); when they are absent (the design's anticipated state)
+those tables are empty and the analyses are recorded as blocked, and
+**leave-one-replicate-out** stability is recorded as permanently blocked (it needs
+a STRIDE re-run). Per-run θ is read, never recomputed, and is never reconstructed
+from the K-aggregate; residue-scale per-run products are `exploratory` at K = 3;
+the gate stays uncalibrated. See [`s6.md`](s6.md).
+
+Further stages (S7+) import the canonical tables and/or the
+S1A/S1B/S2/S3/S4/S5/S6 tables (or their builders) and add their own module. They
+must not modify S0, S1A, S1B, S2, S3, S4, S5, or S6, must keep the data levels
+separate, and must not commit generated outputs. See `CONTRIBUTING.md`.

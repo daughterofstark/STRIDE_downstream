@@ -54,6 +54,42 @@ def make_correlations_df(serotype: str, replicate_index: int) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def make_real_correlations_df(
+    serotype: str, replicate_index: int
+) -> pd.DataFrame:
+    """A Level-1 replicate table in the *native STRIDE* style.
+
+    Unlike :func:`make_correlations_df` — whose ``label`` column already equals
+    the canonical ``"{chain}:{canon_resid}"`` key — this mirrors the real STRIDE
+    correlations schema: it carries an explicit ``chain`` column and a
+    residue-name ``label`` (e.g. ``"HIS-51"``) that is deliberately **not** the
+    canonical join key. It exercises the canonical-key reconstruction in
+    :func:`stride_analysis.canonical.replicate_canon_label`.
+    """
+    rows = []
+    for key, path in _PATHS.items():
+        chain = path[2]  # e.g. "NS3"
+        canon_resid = 51 if key == "A" else 200
+        name = "HIS" if key == "A" else "LYS"
+        r = (0.4 if key == "A" else -0.2) + 0.01 * replicate_index
+        rows.append(
+            {
+                "file_resid": canon_resid,
+                "canon_resid": canon_resid,
+                "name": name,
+                # resname-style label, NOT the canonical "{chain}:{canon_resid}"
+                "label": f"{name}-{canon_resid}",
+                "r": r,
+                "abs_r": abs(r),
+                "chain": chain,
+                "domain_label": "NS3pro",
+                "rmsf": 0.8 + 0.05 * replicate_index,
+                "theta_se": 0.05,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def make_profile_df(serotype: str) -> pd.DataFrame:
     rho_by_locus = {
         "A": {0: 0.80, 1: 0.82, 2: 0.85, 3: 0.88, 4: 0.90, 5: 0.92, 6: 0.95},
@@ -133,6 +169,45 @@ def write_dataset(
             analysis = root / run / sero / ANALYSIS_OUTPUT_DIRNAME
             analysis.mkdir(parents=True, exist_ok=True)
             make_correlations_df(sero, idx).to_csv(
+                analysis / f"{sero}_correlations_v5.csv", index=False
+            )
+    if with_summaries:
+        summaries = root / "summaries"
+        summaries.mkdir(parents=True, exist_ok=True)
+        for sero in serotypes:
+            make_profile_df(sero).to_csv(
+                summaries / f"{sero}_profile.csv", index=False
+            )
+            (summaries / f"{sero}_mechanism.json").write_text(
+                json.dumps(make_mechanism_dict(sero), indent=2)
+            )
+    return root
+
+
+def write_real_dataset(
+    root: Path,
+    serotypes: list[str],
+    run_dirs: list[str],
+    *,
+    container: str | None = "per_run",
+    with_summaries: bool = True,
+) -> Path:
+    """Materialise a *native-STRIDE-style* dataset and return its root.
+
+    Uses :func:`make_real_correlations_df` (explicit ``chain`` column,
+    residue-name ``label``). Run directories are placed under
+    ``<root>/<container>/`` — ``"per_run"`` by default (the native STRIDE
+    layout), ``"replicates"`` for the flat layout, or ``None`` to place them
+    directly under ``root``. Summaries, when written, always live under
+    ``<root>/summaries``.
+    """
+    root = Path(root)
+    base = root if container is None else root / container
+    for idx, run in enumerate(run_dirs, start=1):
+        for sero in serotypes:
+            analysis = base / run / sero / ANALYSIS_OUTPUT_DIRNAME
+            analysis.mkdir(parents=True, exist_ok=True)
+            make_real_correlations_df(sero, idx).to_csv(
                 analysis / f"{sero}_correlations_v5.csv", index=False
             )
     if with_summaries:

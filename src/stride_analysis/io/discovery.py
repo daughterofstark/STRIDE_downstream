@@ -7,9 +7,10 @@ layouts are supported and auto-detected:
 **Nested layout** (real STRIDE tree)::
 
     <root>/
-      1st_run/DENV1/analysis_output/DENV1_correlations_v5.csv
-      2nd_run/DENV1/analysis_output/DENV1_correlations_v5.csv
-      3rd_run/DENV1/analysis_output/DENV1_correlations_v5.csv
+      per_run/                             (or the run dirs directly under root)
+        1st_run/DENV1/analysis_output/DENV1_correlations_v5.csv
+        2nd_run/DENV1/analysis_output/DENV1_correlations_v5.csv
+        3rd_run/DENV1/analysis_output/DENV1_correlations_v5.csv
       summaries/DENV1_profile.csv          (or profiles alongside root)
       summaries/DENV1_mechanism.json
 
@@ -20,9 +21,12 @@ layouts are supported and auto-detected:
       summaries/<serotype>_profile.csv
       summaries/<serotype>_mechanism.json
 
-Discovery is permissive about *where* the summaries live (root, ``summaries/``,
-or next to the replicates) but strict about *consistency*: it fails loudly on
-missing components, inconsistent replicate counts, or duplicate serotypes.
+The per-run subtrees may sit inside a ``per_run/`` container (native STRIDE), a
+``replicates/`` container (flat example), or directly under the root; all three
+are auto-detected. Discovery is permissive about *where* the summaries live
+(root, ``summaries/``, or next to the replicates) but strict about
+*consistency*: it fails loudly on missing components, inconsistent replicate
+counts, or duplicate serotypes.
 """
 from __future__ import annotations
 
@@ -42,11 +46,28 @@ from ..models.schema import (
     PROFILE_SUFFIX,
 )
 
+#: Container directory names that may hold the per-run subtrees. The native
+#: STRIDE tree uses ``per_run/``; the flat example/test layout uses
+#: ``replicates/``. Either is accepted transparently; if neither is present the
+#: run directories are taken directly under the root.
+RUN_CONTAINER_DIRNAMES: tuple[str, ...] = ("per_run", "replicates")
+
 
 def _run_dirs(root: Path) -> list[Path]:
-    """Return candidate run directories under ``root`` (nested or ./replicates)."""
-    replicates_root = root / "replicates"
-    base = replicates_root if replicates_root.is_dir() else root
+    """Return candidate run directories under ``root``.
+
+    The per-run subtrees may sit inside a container directory named ``per_run/``
+    (native STRIDE layout) or ``replicates/`` (flat example layout), or directly
+    under ``root``. The container names in :data:`RUN_CONTAINER_DIRNAMES` are
+    auto-detected; when none is present the run directories are taken directly
+    under ``root`` (unchanged behaviour).
+    """
+    base = root
+    for container in RUN_CONTAINER_DIRNAMES:
+        candidate = root / container
+        if candidate.is_dir():
+            base = candidate
+            break
     runs = [
         d
         for d in sorted(base.iterdir())

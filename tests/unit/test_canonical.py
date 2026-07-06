@@ -7,12 +7,14 @@ from stride_analysis._synthetic import (
     make_correlations_df,
     make_mechanism_dict,
     make_profile_df,
+    make_real_correlations_df,
 )
 from stride_analysis.canonical import (
     assemble_replicate_table,
     assemble_stride_table,
     build_replicate_rows,
     build_stride_rows,
+    replicate_canon_label,
 )
 from stride_analysis.models import MechanismFile, ReplicateInput
 from stride_analysis.models.schema import (
@@ -26,6 +28,45 @@ def _rep_input(sero: str, run: str, idx: int) -> ReplicateInput:
         serotype=sero, run_dir=run, replicate_index=idx,
         correlations_path=Path(f"/x/{run}/{sero}/analysis_output/c.csv"),
     )
+
+
+# -- canonical join key construction (Bug 2 regression) ---------------------
+def test_replicate_canon_label_rebuilds_from_chain_and_resid() -> None:
+    """Real STRIDE style: key is ``{chain}:{canon_resid}``, not the label."""
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "canon_resid": [51, -24, 112],
+            "name": ["HIS", "ALA", "GLY"],
+            # resname-style labels that are NOT the canonical join key
+            "label": ["HIS-51", "ALA-24", "GLY112"],
+            "chain": ["NS3", "NS2B", "NS3"],
+        }
+    )
+    assert replicate_canon_label(df).tolist() == ["NS3:51", "NS2B:-24", "NS3:112"]
+
+
+def test_replicate_canon_label_falls_back_to_label_without_chain() -> None:
+    """Synthetic style: no ``chain`` column, ``label`` already canonical."""
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "canon_resid": [51, 200],
+            "name": ["HIS", "LYS"],
+            "label": ["NS3:51", "NS3:200"],
+        }
+    )
+    assert replicate_canon_label(df).tolist() == ["NS3:51", "NS3:200"]
+
+
+def test_build_replicate_rows_uses_canonical_key_for_real_style() -> None:
+    """The real-style ``label`` (``HIS-51``) must not leak into ``canon_label``."""
+    df = make_real_correlations_df("DENV1", 1)
+    out = build_replicate_rows(df, _rep_input("DENV1", "1st_run", 1))
+    assert set(out["canon_label"]) == {"NS3:51", "NS3:200"}
+    assert not set(out["canon_label"]) & set(out["label"])  # disjoint from label
 
 
 # -- replicate table --------------------------------------------------------

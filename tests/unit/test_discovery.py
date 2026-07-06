@@ -15,9 +15,55 @@ from stride_analysis._synthetic import (
     make_mechanism_dict,
     make_profile_df,
     write_dataset,
+    write_real_dataset,
 )
 from stride_analysis.io import discover_replicates
 from stride_analysis.models.errors import DiscoveryError
+
+
+# -- native container layouts (Bug 1 regression) ----------------------------
+def test_discovers_native_per_run_container(tmp_path: Path) -> None:
+    """The native STRIDE ``per_run/`` container is discovered without renaming."""
+    root = write_real_dataset(
+        tmp_path / "stride_outs",
+        ["DENV1", "DENV2"],
+        ["1st_run", "2nd_run", "3rd_run"],
+        container="per_run",
+    )
+    ds = discover_dataset(root)
+    assert ds.names == ("DENV1", "DENV2")
+    for s in ds.serotypes:
+        assert s.n_replicates == 3
+        assert s.summary is not None
+
+
+def test_discovers_replicates_container(tmp_path: Path) -> None:
+    """The flat ``replicates/`` container still works (unchanged behaviour)."""
+    root = write_real_dataset(
+        tmp_path / "d",
+        ["DENV1", "DENV2"],
+        ["1st_run", "2nd_run", "3rd_run"],
+        container="replicates",
+    )
+    ds = discover_dataset(root)
+    assert ds.names == ("DENV1", "DENV2")
+    reps = discover_replicates(root)
+    ordered = sorted(reps["DENV1"], key=lambda r: r.replicate_index)
+    assert [r.run_dir for r in ordered] == ["1st_run", "2nd_run", "3rd_run"]
+
+
+def test_discovers_run_dirs_directly_under_root(tmp_path: Path) -> None:
+    """With no container, run dirs directly under the root still discover."""
+    root = write_real_dataset(
+        tmp_path / "d",
+        ["DENV1", "DENV2"],
+        ["1st_run", "2nd_run"],
+        container=None,
+    )
+    ds = discover_dataset(root)
+    assert ds.names == ("DENV1", "DENV2")
+    for s in ds.serotypes:
+        assert s.n_replicates == 2
 
 
 def test_discovers_full_dataset(dataset_root: Path) -> None:

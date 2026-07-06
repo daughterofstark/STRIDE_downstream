@@ -22,6 +22,7 @@ from .canonical import (
     assemble_stride_table,
     build_replicate_rows,
     build_stride_rows,
+    replicate_canon_label,
 )
 from .io import (
     discover_dataset,
@@ -115,7 +116,7 @@ def build_tables(
         for rep in sero.replicates:
             df = load_correlations(rep.correlations_path)
             validate_correlations_schema(df, rep.serotype, rep.run_dir)
-            rep_labels_union |= set(df["label"].astype(str))
+            rep_labels_union |= set(replicate_canon_label(df).astype(str))
             rows = build_replicate_rows(df, rep)
             sero_rep_rows += len(rows)
             replicate_frames.append(rows)

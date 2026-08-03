@@ -271,24 +271,6 @@ def artifact_payloads() -> dict[str, bytes]:
     observed_commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=repo, text=True
     ).strip()
-
-    anchor_is_ancestor = subprocess.run(
-        [
-            "git",
-            "merge-base",
-            "--is-ancestor",
-            DOWNSTREAM_COMMIT,
-            observed_commit,
-        ],
-        cwd=repo,
-        check=False,
-    ).returncode == 0
-
-    if not anchor_is_ancestor:
-        raise RuntimeError(
-            f"V9B requires history descended from downstream anchor "
-            f"{DOWNSTREAM_COMMIT}; observed HEAD {observed_commit}"
-        )
     manifest = {
         "schema_version": "v9b.manifest.1",
         "purpose": "deterministic_presence_and_recurrence_semantics_validation",

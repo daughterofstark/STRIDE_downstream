@@ -23,7 +23,6 @@ import pandas as pd
 
 from stride_s5.build import build_position_conservation
 
-
 DOWNSTREAM_COMMIT = "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71"
 DATASETS = ("D1", "D2", "D3", "D4")
 N_TOTAL = 4
@@ -272,10 +271,23 @@ def artifact_payloads() -> dict[str, bytes]:
     observed_commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=repo, text=True
     ).strip()
-    if observed_commit != DOWNSTREAM_COMMIT:
+
+    anchor_is_ancestor = subprocess.run(
+        [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            DOWNSTREAM_COMMIT,
+            observed_commit,
+        ],
+        cwd=repo,
+        check=False,
+    ).returncode == 0
+
+    if not anchor_is_ancestor:
         raise RuntimeError(
-            f"V9B requires downstream {DOWNSTREAM_COMMIT}, "
-            f"observed {observed_commit}"
+            f"V9B requires history descended from downstream anchor "
+            f"{DOWNSTREAM_COMMIT}; observed HEAD {observed_commit}"
         )
     manifest = {
         "schema_version": "v9b.manifest.1",
@@ -376,8 +388,38 @@ def test_committed_artifacts_match_current_execution() -> None:
     assert set(payloads) == {
         FIXTURE_NAME, EXPECTED_NAME, RESULTS_NAME, MANIFEST_NAME
     }
-    for name, data in payloads.items():
-        assert (ARTIFACT_DIR / name).read_bytes() == data
+
+    # Scientific fixture, expectation, and result artifacts must remain
+    # byte-identical. The manifest additionally records execution provenance
+    # such as the observed repository HEAD and environment, so it is checked
+    # semantically rather than required to be byte-identical after later
+    # validation-only commits or across CI Python environments.
+    for name in (FIXTURE_NAME, EXPECTED_NAME, RESULTS_NAME):
+        assert (ARTIFACT_DIR / name).read_bytes() == payloads[name]
+
+    committed_manifest = json.loads(
+        (ARTIFACT_DIR / MANIFEST_NAME).read_text()
+    )
+    generated_manifest = json.loads(payloads[MANIFEST_NAME])
+
+    assert committed_manifest["schema_version"] == "v9b.manifest.1"
+    assert generated_manifest["schema_version"] == "v9b.manifest.1"
+    assert (
+        committed_manifest["source"]["downstream_commit_required"]
+        == DOWNSTREAM_COMMIT
+    )
+    assert (
+        generated_manifest["source"]["downstream_commit_required"]
+        == DOWNSTREAM_COMMIT
+    )
+
+    expected_hashes = {
+        name: _sha256(payloads[name])
+        for name in (FIXTURE_NAME, EXPECTED_NAME, RESULTS_NAME)
+    }
+    for name, expected_hash in expected_hashes.items():
+        assert committed_manifest["artifact_sha256"][name] == expected_hash
+        assert generated_manifest["artifact_sha256"][name] == expected_hash
 
 
 def main() -> int:

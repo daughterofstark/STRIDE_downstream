@@ -1,0 +1,45 @@
+{
+  "artifact_sha256": {
+    "v9b_partial_presence_expected.csv": "372e7ce860ef9586389078ebe1721b6f961c1fc655d3d40d2cbfa197bd906ae4",
+    "v9b_partial_presence_fixture.csv": "d3a6700203a9772f0ba0b23e24a881fb338d0a491bb126d6477381da7a7a5a5c",
+    "v9b_partial_presence_results.json": "82537e65b61d2465767d9f6b8a13d498eb36fe294291659e2a01f63000c4a9fb"
+  },
+  "design": {
+    "coordinate_keys": [
+      "P4A",
+      "P4B",
+      "P3A",
+      "P3B",
+      "P2A",
+      "P2B",
+      "P1A",
+      "P1B"
+    ],
+    "datasets": [
+      "D1",
+      "D2",
+      "D3",
+      "D4"
+    ],
+    "n_total": 4,
+    "rho_star": 0.5,
+    "stochastic": false
+  },
+  "environment": {
+    "packages": {
+      "pandas": "3.0.5",
+      "pyarrow": "25.0.0",
+      "pydantic": "2.13.4",
+      "pytest": "9.1.1"
+    },
+    "python_executable": "/private/tmp/stride_phase2d_audit_env/bin/python",
+    "python_version": "3.13.5"
+  },
+  "purpose": "deterministic_presence_and_recurrence_semantics_validation",
+  "schema_version": "v9b.manifest.1",
+  "source": {
+    "downstream_commit_observed": "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71",
+    "downstream_commit_required": "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71",
+    "test_module_sha256": "aee6f0c5f696ab523f42e245f8723eae7a9c0ebef30a27db85847afc5fecb004"
+  }
+}

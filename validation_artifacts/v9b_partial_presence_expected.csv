@@ -1,0 +1,9 @@
+coordinate_key,n_total,n_present,n_reproducible,frac_reproducible,conservation_class,n_signed_reproducible,is_serotype_divergent,present_in_all_four,crossing_all_four,n_absent,n_present_below_cutoff
+P4A,4,4,4,1.0,reproducible_all,4,False,True,True,0,0
+P4B,4,4,2,0.5,reproducible_some,2,True,True,False,0,2
+P3A,4,3,3,1.0,reproducible_all,3,True,False,False,1,0
+P3B,4,3,1,0.333333,reproducible_some,1,True,False,False,1,2
+P2A,4,2,2,1.0,reproducible_all,2,True,False,False,2,0
+P2B,4,2,0,0.0,reproducible_none,0,False,False,False,2,2
+P1A,4,1,1,1.0,reproducible_all,1,True,False,False,3,0
+P1B,4,1,0,0.0,reproducible_none,0,False,False,False,3,1

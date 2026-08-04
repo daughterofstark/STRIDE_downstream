@@ -25,21 +25,17 @@
     "rho_star": 0.5,
     "stochastic": false
   },
-  "environment": {
-    "packages": {
-      "pandas": "3.0.5",
-      "pyarrow": "25.0.0",
-      "pydantic": "2.13.4",
-      "pytest": "9.1.1"
-    },
-    "python_executable": "/private/tmp/stride_phase2d_audit_env/bin/python",
-    "python_version": "3.13.5"
-  },
   "purpose": "deterministic_presence_and_recurrence_semantics_validation",
-  "schema_version": "v9b.manifest.1",
+  "schema_version": "v9b.manifest.2",
   "source": {
-    "downstream_commit_observed": "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71",
     "downstream_commit_required": "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71",
-    "test_module_sha256": "aee6f0c5f696ab523f42e245f8723eae7a9c0ebef30a27db85847afc5fecb004"
+    "production_source_hashes": {
+      "src/stride_s5/build/__init__.py": "d0779f5ed1b0bd4dab8a366ca08309f0ae53f2afc2ecef4e0919bacbd0979362",
+      "src/stride_s5/build/_classify.py": "b9e0f5cc386e4bfda23ac180c1a16ec07bcb062e81e8c24e68a603fcf95e341c",
+      "src/stride_s5/build/_frames.py": "be9c3c5e9f52fbe7dea5cd66c7e8d1e249db7b170529f39ba6eee6997a6edbbd",
+      "src/stride_s5/build/position_conservation.py": "4c1d6efa5701995a41d5761a0928f052568f9f3f9c208cecf5888d42107457ad",
+      "src/stride_s5/models/errors.py": "9abe6d84806d8a9bed44f716bd4e6e05165aa852d4079a43664ca25821210165",
+      "src/stride_s5/models/schema.py": "1f7f656b3b8a08313d017c0ab0d8548d4ab5386dbff5b4a4d8ffb2d4e9834e75"
+    }
   }
 }

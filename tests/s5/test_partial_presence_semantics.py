@@ -14,7 +14,6 @@ import argparse
 import hashlib
 import json
 import platform
-import subprocess
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -22,8 +21,12 @@ from pathlib import Path
 import pandas as pd
 
 from stride_s5.build import build_position_conservation
+from tests.s5.v9b_provenance import (
+    DOWNSTREAM_COMMIT,
+    EXPECTED_SOURCE_HASHES,
+    verify_provenance,
+)
 
-DOWNSTREAM_COMMIT = "4388dbcefaaa1672b63cc7bbce357e1b4ec40b71"
 DATASETS = ("D1", "D2", "D3", "D4")
 N_TOTAL = 4
 RHO_STAR = 0.5
@@ -33,6 +36,7 @@ FIXTURE_NAME = "v9b_partial_presence_fixture.csv"
 EXPECTED_NAME = "v9b_partial_presence_expected.csv"
 RESULTS_NAME = "v9b_partial_presence_results.json"
 MANIFEST_NAME = "v9b_manifest.json"
+RUNTIME_PROVENANCE_NAME = "v9b_runtime_provenance.json"
 
 FIXTURE_ROWS = (
     ("P4A", "D1;D2;D3;D4", "D1;D2;D3;D4", "D1;D2;D3;D4"),
@@ -267,25 +271,12 @@ def artifact_payloads() -> dict[str, bytes]:
         EXPECTED_NAME: _csv_bytes(expected),
         RESULTS_NAME: _json_bytes(result_document),
     }
-    repo = Path(__file__).resolve().parents[2]
-    observed_commit = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=repo, text=True
-    ).strip()
     manifest = {
-        "schema_version": "v9b.manifest.1",
+        "schema_version": "v9b.manifest.2",
         "purpose": "deterministic_presence_and_recurrence_semantics_validation",
         "source": {
             "downstream_commit_required": DOWNSTREAM_COMMIT,
-            "downstream_commit_observed": observed_commit,
-            "test_module_sha256": _sha256(Path(__file__).read_bytes()),
-        },
-        "environment": {
-            "python_executable": sys.executable,
-            "python_version": platform.python_version(),
-            "packages": {
-                name: version(name)
-                for name in ("pandas", "pyarrow", "pydantic", "pytest")
-            },
+            "production_source_hashes": EXPECTED_SOURCE_HASHES,
         },
         "design": {
             "datasets": list(DATASETS),
@@ -302,12 +293,35 @@ def artifact_payloads() -> dict[str, bytes]:
     return payloads
 
 
-def write_artifacts(output_dir: Path = ARTIFACT_DIR) -> dict[str, str]:
+def runtime_provenance_payload(repo_root: Path) -> bytes:
+    provenance = verify_provenance(repo_root)
+    runtime = {
+        "schema_version": "v9b.runtime_provenance.1",
+        "git_and_source_provenance": provenance,
+        "environment": {
+            "python_executable": sys.executable,
+            "python_version": platform.python_version(),
+            "packages": {
+                name: version(name)
+                for name in ("pandas", "pyarrow", "pydantic", "pytest")
+            },
+        },
+    }
+    return _json_bytes(runtime)
+
+
+def write_artifacts(
+    output_dir: Path = ARTIFACT_DIR, *, include_runtime_provenance: bool = False
+) -> dict[str, str]:
     """Write the four deterministic artifacts and return their SHA-256 values."""
     output_dir.mkdir(parents=True, exist_ok=True)
     payloads = artifact_payloads()
     for name, data in payloads.items():
         (output_dir / name).write_bytes(data)
+    if include_runtime_provenance:
+        runtime = runtime_provenance_payload(Path(__file__).resolve().parents[2])
+        (output_dir / RUNTIME_PROVENANCE_NAME).write_bytes(runtime)
+        payloads[RUNTIME_PROVENANCE_NAME] = runtime
     return {name: _sha256(data) for name, data in sorted(payloads.items())}
 
 
@@ -384,8 +398,8 @@ def test_committed_artifacts_match_current_execution() -> None:
     )
     generated_manifest = json.loads(payloads[MANIFEST_NAME])
 
-    assert committed_manifest["schema_version"] == "v9b.manifest.1"
-    assert generated_manifest["schema_version"] == "v9b.manifest.1"
+    assert committed_manifest["schema_version"] == "v9b.manifest.2"
+    assert generated_manifest["schema_version"] == "v9b.manifest.2"
     assert (
         committed_manifest["source"]["downstream_commit_required"]
         == DOWNSTREAM_COMMIT
@@ -410,7 +424,7 @@ def main() -> int:
     args = parser.parse_args()
     if not args.write_artifacts:
         parser.error("--write-artifacts is required outside pytest")
-    print(json.dumps(write_artifacts(), sort_keys=True))
+    print(json.dumps(write_artifacts(include_runtime_provenance=True), sort_keys=True))
     return 0
 
 

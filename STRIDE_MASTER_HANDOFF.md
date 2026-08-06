@@ -2,9 +2,8 @@
 
 **Purpose.** This document is a complete, self-contained technical handoff for the
 `stride-dengue-analysis` repository (a.k.a. `STRIDE_downstream-main`). It is
-written so that a **brand-new Claude conversation with zero prior context** can
-pick up development and implement the next stage without any additional
-knowledge. Attach this file (and the repository ZIP) to the new conversation.
+written so that a anyone can pick up development and implement the next stage without any additional
+knowledge. 
 
 It documents the exact current state, the architecture every stage must follow,
 the invariants that must never be broken, the development and verification
